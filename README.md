@@ -1,2 +1,9 @@
-# Trabalho-Final-APOO
-Trabalho final de APOO focado na criação do IFriends.
+# IFriends
+
+## Integrantes
+
+> Gabriel Isaias
+
+## Objetivo
+
+> Testa as habilidades dos estudantes para resolver o exame de seleção do IFRN através de questões.
