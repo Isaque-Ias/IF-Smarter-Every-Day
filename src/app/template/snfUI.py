@@ -17,3 +17,10 @@ class ScreenNotFoundUI:
         if st.button("Voltar para o meu perfil"):
             st.session_state.screen = "perfil"
             st.rerun()
+
+    @classmethod
+    def admin(cls):
+        st.header("Você não possui permissão.")
+        if st.button("Voltar para a tela inicial"):
+            st.session_state.screen = "login"
+            st.rerun()

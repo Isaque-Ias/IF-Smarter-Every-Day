@@ -1,7 +1,7 @@
 from models.dao import DAO
 
 class Email:
-    def __init__(self, id, email, fk, table):
+    def __init__(self, email, fk, table):
         self.set_email(email)
         self.set_fk(fk)
         self.set_table(table)

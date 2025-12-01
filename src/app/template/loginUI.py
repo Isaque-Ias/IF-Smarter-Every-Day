@@ -9,12 +9,17 @@ class LoginUI:
         col1, col2 = st.columns(2)
         with col1:
             if st.button("Entrar"):
-                c = View.autenticar(email, senha)
+                c, t = View.autenticar(email, senha)
                 if c == None: st.write("E-mail ou senha inválidos")
                 else:
-                    st.session_state.tutorial = False
-                    st.session_state.usuario_id = c.get_id()
-                    st.session_state.screen = "course"
+                    if t == "user":
+                        st.session_state.tutorial = False
+                        st.session_state.usuario_id = c.get_id()
+                        st.session_state.screen = "course"
+                    else:
+                        st.session_state.adm_id = c.get_id()
+                        st.session_state.screen = "adm_hub"
+
                     st.rerun()
 
         with col2:

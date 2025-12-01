@@ -64,6 +64,7 @@ class DAO(ABC):
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS questions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                category INTEGER NOT NULL,
                 text TEXT,
                 picture BLOB,
                 picture_mime_type VARCHAR(127),
