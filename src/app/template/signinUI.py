@@ -40,7 +40,7 @@ class SigninUI:
             st.header("Diga um pouco mais sobre você...")
 
             nome = st.text_input("Informe o nome", value=cls.fill("nome"))
-            descricao = st.text_area("Fale um pouco sobre você...")
+            descricao = st.text_area("Fale um pouco sobre você...", value=cls.fill("descricao"))
             matematica = st.checkbox("Quero estudar matemática", value=cls.fill("matematica", False))
             portugues = st.checkbox("Quero estudar português", value=cls.fill("portugues", False))
             col1, col2 = st.columns(2)
@@ -57,6 +57,7 @@ class SigninUI:
                         usuario = View.usuario_listar_nome(nome)
                         if usuario == None:
                             st.session_state.nome = nome
+                            st.session_state.descricao = descricao
                             st.session_state.matematica = matematica
                             st.session_state.portugues = portugues
                             st.session_state.sign_step = 2
@@ -79,14 +80,29 @@ class SigninUI:
             with col2:
                 if st.button("Criar conta"):
                     st.session_state.beta = beta
+
+                    session_data = [
+                        st.session_state.nome,
+                        st.session_state.email,
+                        st.session_state.senha,
+                        st.session_state.descricao,
+                        st.session_state.matematica,
+                        st.session_state.portugues,
+                        st.session_state.beta
+                    ]
                     
-                    st.session_state.usuario_id = user_id
-                    st.session_state.perfil_id = user_id
-                    st.session_state.tutorial = True
-                    st.session_state.screen = "perfil"
-                    st.session_state.pop("sign_step", "fail")
+                    user_id = View.inserir_usuario(*session_data)
                     
-                    st.rerun()
+                    if user_id == None:
+                        warn = "Não foi possível criar o usuário."
+                    else:
+                        st.session_state.usuario_id = user_id
+                        st.session_state.perfil_id = user_id
+                        st.session_state.tutorial = True
+                        st.session_state.screen = "perfil"
+                        st.session_state.pop("sign_step", "fail")
+                        
+                        st.rerun()
                         
             if warn:
                 st.warning(warn)

@@ -2,27 +2,22 @@ import bcrypt
 from models.dao import DAO
 
 class Admin:
-    def __init__(self, id, nome, email, senha):
+    def __init__(self, id, nome, senha):
         self.set_id(id)
         self.set_nome(nome)
-        self.set_email(email)
         self.set_senha(senha)
         
     def __str__(self):
-        return f"{self.__id}-{self.__nome}-{self.__email}-{self.__senha}"
+        return f"{self.__id}-{self.__nome}-{self.__senha}"
 
     def get_id(self): return self.__id
     def get_nome(self): return self.__nome
-    def get_email(self): return self.__email
     def get_senha(self): return self.__senha
 
     def set_id(self, id): self.__id = id
     def set_nome(self, nome):
         if nome == "": raise ValueError("Nome inválido")
         self.__nome = nome
-    def set_email(self, email):
-        if email == "": raise ValueError("E-mail inválido")
-        self.__email = email
     def set_senha(self, senha):
         if senha == "": raise ValueError("Senha inválida")
         if isinstance(senha, bytes):
@@ -33,7 +28,6 @@ class Admin:
     def to_sqlite(self):
         values_array = [
             self.get_nome(),
-            self.get_email(),
             self.get_senha()
         ]
         return values_array
@@ -42,24 +36,13 @@ class AdminDAO(DAO):
     table = "admins"
 
     @classmethod
-    def listar_email(cls, email):
-        conn = cls.get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute("""
-            SELECT * FROM users WHERE email == ?;
-        """, (email,))
-        
-        return cursor.fetchone()
-
-    @classmethod
     def salvar(cls, obj):
         conn = cls.get_connection()
         cursor = conn.cursor()
 
         user_data = obj.to_sqlite()
 
-        cursor.execute('INSERT OR IGNORE INTO users (name, email, password) VALUES (?, ?, ?)', user_data)
+        cursor.execute('INSERT OR IGNORE INTO admins (name, password) VALUES (?, ?)', user_data)
 
         conn.commit()
         conn.close()

@@ -54,7 +54,9 @@ class IndexUI:
             st.rerun()
     """
     def main():
+        
         View.setup_db()
+        View.minimo_admin()
         IndexUI.state()
 
 IndexUI.main()

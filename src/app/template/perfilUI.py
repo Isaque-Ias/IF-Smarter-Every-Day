@@ -13,31 +13,39 @@ class PerfilUI:
     
     @classmethod
     def main(cls):
-        cls.usuario = View.usuario_listar_id(st.session_state.usuario_id)
-        opcoes = ["Perfil"]
-        if "tutorial" in st.session_state and st.session_state.tutorial == True:
-            st.header(f"Olá, {cls.usuario.get_nome()}! Escolha um dos seus cursos nas abas!")
+        if "perfil_id" not in st.session_state:
+            cls.usuario = None
         else:
-            opcoes.extend(["Editar Perfil", "Excluir Perfil"])
-        if cls.usuario.get_mat():
-            opcoes.append("Matemática")
-        if cls.usuario.get_pt():
-            opcoes.append("Português")
+            cls.usuario = View.usuario_listar_id(st.session_state.perfil_id)
+        if cls.usuario == None:
+            st.header("Usuário não encontrado...")
+            if st.button("Ir para meu perfil"):
+                st.session_state.perfil_id = st.session_state.usuario_id
+        else:
+            opcoes = ["Perfil"]
+            if "tutorial" in st.session_state and st.session_state.tutorial == True:
+                st.header(f"Olá, {cls.usuario.get_nome()}! Escolha um dos seus cursos nas abas!")
+            else:
+                opcoes.extend(["Editar Perfil", "Excluir Perfil"])
+            if cls.usuario.get_mat():
+                opcoes.append("Matemática")
+            if cls.usuario.get_pt():
+                opcoes.append("Português")
 
-        tabs = st.tabs(opcoes)
-        for tab_name, tab in zip(opcoes, tabs):
-            with tab:
-                if tab_name == "Perfil":
-                    PerfilUI.perfil()
-                elif tab_name == "Matemática":
-                    PerfilUI.mat()
-                elif tab_name == "Português":
-                    PerfilUI.pt()
-                elif tab_name == "Editar Perfil":
-                    PerfilUI.editar()
-                elif tab_name == "Excluir Perfil":
-                    PerfilUI.excluir()
-                
+            tabs = st.tabs(opcoes)
+            for tab_name, tab in zip(opcoes, tabs):
+                with tab:
+                    if tab_name == "Perfil":
+                        PerfilUI.perfil()
+                    elif tab_name == "Matemática":
+                        PerfilUI.mat()
+                    elif tab_name == "Português":
+                        PerfilUI.pt()
+                    elif tab_name == "Editar Perfil":
+                        PerfilUI.editar()
+                    elif tab_name == "Excluir Perfil":
+                        PerfilUI.excluir()
+                    
     @classmethod
     def perfil(cls):
         st.text(cls.usuario.get_nome())
