@@ -26,6 +26,7 @@ class DAO(ABC):
                 enrolled_pt INTEGER NOT NULL,
                 xp_math INTEGER,
                 xp_pt INTEGER,
+                description TEXT,
                 profile_pic BLOB,
                 profile_pic_mime VARCHAR(127),
                 is_beta INTEGER NOT NULL

@@ -1,37 +1,20 @@
 import bcrypt
 from models.dao import DAO
-from models.error import LengthError
 
-class Usuario:
-    def __init__(self, id, nome, email, senha, mat, pt, xp_mat=0, xp_pt=0, description="", pic="", pic_mime="", beta=False):
+class Admin:
+    def __init__(self, id, nome, email, senha):
         self.set_id(id)
         self.set_nome(nome)
         self.set_email(email)
         self.set_senha(senha)
-        self.set_mat(mat)
-        self.set_pt(pt)
-        self.set_beta(beta)
-        self.set_xp_mat(xp_mat)
-        self.set_xp_pt(xp_pt)
-        self.set_description(description)
-        self.set_pic(pic)
-        self.set_pic_mime(pic_mime)
-
+        
     def __str__(self):
-        return f"{self.__id}-{self.__nome}-{self.__email}-{self.__senha}-{self.__mat}-{self.__pt}-{self.__xp_mat}-{self.__xp_pt}-{self.__description}-{self.__beta}-{self.__pic}-{self.__pic_mime}"
+        return f"{self.__id}-{self.__nome}-{self.__email}-{self.__senha}"
 
     def get_id(self): return self.__id
     def get_nome(self): return self.__nome
     def get_email(self): return self.__email
     def get_senha(self): return self.__senha
-    def get_mat(self): return self.__mat
-    def get_pt(self): return self.__pt
-    def get_xp_mat(self): return self.__xp_mat
-    def get_xp_pt(self): return self.__xp_pt
-    def get_description(self): return self.__description
-    def get_pic(self): return self.__pic
-    def get_pic_mime(self): return self.__pic_mime
-    def get_beta(self): return self.__beta
 
     def set_id(self, id): self.__id = id
     def set_nome(self, nome):
@@ -52,16 +35,10 @@ class Usuario:
         self.__pt = pt
     def set_xp_mat(self, xp_mat):
         if xp_mat == "": raise ValueError("XP Inválido")
-        if not isinstance(xp_mat, int): raise TypeError("Deve ser um inteiro")
         self.__xp_mat = xp_mat
     def set_xp_pt(self, xp_pt):
         if xp_pt == "": raise ValueError("XP Inválido")
-        if not isinstance(xp_pt, int): raise TypeError("Deve ser um inteiro")
         self.__xp_pt = xp_pt
-    def set_description(self, description):
-        if not isinstance(description, str): raise TypeError("A descrição deve ser um texto válido")
-        if len(description) > 1000: raise LengthError("Limite de caracteres excedido")
-        self.__description = description
     def set_pic(self, pic):
         self.__pic = pic
     def set_pic_mime(self, pic_mime):
