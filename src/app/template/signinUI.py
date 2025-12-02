@@ -93,7 +93,7 @@ class SigninUI:
                     
                     user_id = View.inserir_usuario(*session_data)
                     
-                    if user_id == None:
+                    if user_id is None:
                         warn = "Não foi possível criar o usuário."
                     else:
                         st.session_state.usuario_id = user_id

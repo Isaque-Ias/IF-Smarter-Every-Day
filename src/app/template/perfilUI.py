@@ -21,6 +21,9 @@ class PerfilUI:
             st.header("Usuário não encontrado...")
             if st.button("Ir para meu perfil"):
                 st.session_state.perfil_id = st.session_state.usuario_id
+            if st.button("Deslogar"):
+                st.session_state.usuario_id = None
+                st.session_state.screen = "login"
         else:
             opcoes = ["Perfil"]
             if "tutorial" in st.session_state and st.session_state.tutorial == True:

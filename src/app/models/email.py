@@ -45,6 +45,28 @@ class EmailDAO(DAO):
         return cursor.fetchone()
 
     @classmethod
+    def listar_admin_id(cls, id):
+        conn = cls.get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT * FROM emails WHERE admin_id == ?;
+        """, (id,))
+        
+        return cursor.fetchone()
+
+    @classmethod
+    def listar_user_id(cls, id):
+        conn = cls.get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT * FROM emails WHERE user_id == ?;
+        """, (id,))
+        
+        return cursor.fetchone()
+
+    @classmethod
     def salvar(cls, obj):
         conn = cls.get_connection()
         cursor = conn.cursor()

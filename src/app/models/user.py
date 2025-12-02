@@ -94,14 +94,21 @@ class UsuarioDAO(DAO):
         return cursor.fetchone()
 
     @classmethod
-    def salvar(cls, obj):
+    def salvar(cls, obj, email):
         conn = cls.get_connection()
         cursor = conn.cursor()
 
         user_data = obj.to_sqlite()
+
+        success = None
+
         cursor.execute('INSERT OR IGNORE INTO users (name, password, enrolled_math, enrolled_pt, xp_math, xp_pt, description, profile_pic, profile_pic_mime, is_beta) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', user_data)
-        conn.commit()
+        if cursor.rowcount > 0:
+            cursor.execute(f'INSERT OR IGNORE INTO emails (email, user_id) VALUES (?, ?)', (email, cursor.lastrowid))
+            if cursor.rowcount > 0:
+                conn.commit()
+                success = True
+
         conn.close()
 
-        if cursor.rowcount > 0:
-            return cursor.lastrowid
+        return success

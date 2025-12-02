@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 import sqlite3
 from pathlib import Path
+import os
+import sys
 
 class DAO(ABC):
     _objetos = []
@@ -8,7 +10,12 @@ class DAO(ABC):
     @staticmethod
     def get_connection():
         PATH = Path.cwd()
-        conn = sqlite3.connect(PATH / "src" / "app" / "db" / 'app.db')
+        DB_DIR = PATH / "src" / "app" / "db"
+        DB_PATH = DB_DIR / "app.db"
+
+        DB_DIR.mkdir(parents=True, exist_ok=True)
+        
+        conn = sqlite3.connect(DB_PATH)
         return conn
 
     @classmethod
@@ -45,10 +52,11 @@ class DAO(ABC):
 
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS course_progress (
-                course_type INTEGER NOT NULL,
+                question_id INTEGER NOT NULL,
                 user_id INTEGER NOT NULL,
                 course_point INTEGER NOT NULL,
                 completion INTEGER NOT NULL,
+                FOREIGN KEY (question_id) REFERENCES questions(id),
                 FOREIGN KEY (user_id) REFERENCES users(id)
             )
         ''')
@@ -142,6 +150,18 @@ class DAO(ABC):
 
         return results
 
+    @classmethod
+    def excluir_id(cls, id):
+        conn = cls.get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(f"DELETE FROM {cls.table} WHERE id == ?", (id, ))
+        result = cursor.rowcount
+        
+        conn.commit()
+        conn.close()
+
+        return result
 
     @classmethod
     @abstractmethod

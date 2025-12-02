@@ -18,10 +18,14 @@ class View:
 
         if data.get_table() == "users":
             usuario = View.usuario_listar_id(data.get_fk())
+            if usuario == None:
+                return None, None
             if bcrypt.checkpw(senha.encode(), usuario.get_senha()):
                 return usuario, "user"
         else:
             admin = View.admin_listar_id(data.get_fk())
+            if admin == None:
+                return None, None
             if bcrypt.checkpw(senha.encode(), admin.get_senha()):
                 return admin, "admin"
 
@@ -35,13 +39,18 @@ class View:
         return Email(result[0], result[2], "admins")
     
     @staticmethod
+    def admin_email(id):
+        result = EmailDAO.listar_admin_id(id)
+        if result == None:
+            return None
+        if not result[1] == None:
+            return Email(result[0], result[1], "users")
+        return Email(result[0], result[2], "admins")
+    
+    @staticmethod
     def inserir_usuario(nome, email, senha, descricao, matematica, portugues, beta):
         u = Usuario(0, nome, senha, matematica, portugues, beta, desc=descricao)
-        user_id = UsuarioDAO.salvar(u)
-        e = Email(email, user_id, "users")
-        email_id = EmailDAO.salvar(e)
-        if email_id == None:
-            user_id = None
+        user_id = UsuarioDAO.salvar(u, email)
         return user_id
     
     @staticmethod
@@ -67,16 +76,20 @@ class View:
     
     @staticmethod
     def admin_listar():
-        return AdminDAO.listar()
+        query = AdminDAO.listar()
+
+        if query == None:
+            return None
+        
+        objects = []
+        for element in query:
+            objects.append(Admin(element[0], element[1], element[2]))
+        return objects
     
     @staticmethod
     def inserir_admin(nome, email, senha):
         adm = Admin(0, nome, senha)
-        adm_id = AdminDAO.salvar(adm)
-        e = Email(email, adm_id, "admins")
-        email_id = EmailDAO.salvar(e)
-        if email_id == None:
-            adm_id = None
+        adm_id = AdminDAO.salvar(adm, email)
         return adm_id
 
     def inserir_questao(cat, alt, c_alt, text, pic, mime_type, adder):
@@ -92,7 +105,55 @@ class View:
     @staticmethod
     def questoes_listar():
         query = QuestaoDAO.listar()
+
+        if query == None:
+            return None
+        
         objects = []
         for element in query:
             objects.append(Questao(element[0], element[1], element[5], element[6], element[2], element[3], element[4], element[7]))
         return objects
+
+    @staticmethod
+    def questoes_listar_categoria(categoria):
+        query = QuestaoDAO.listar_categoria(categoria)
+
+        if query == None:
+            return None
+
+        objects = []
+        for element in query:
+            objects.append(Questao(element[0], element[1], element[5], element[6], element[2], element[3], element[4], element[7]))
+        return objects
+
+    @staticmethod
+    def questoes_listar_id(id):
+        element = QuestaoDAO.listar_id(id)
+        
+        if element == None:
+            return None
+            
+        object = Questao(element[0], element[1], element[5], element[6], element[2], element[3], element[4], element[7])
+        return object
+
+    @staticmethod
+    def questoes_excluir_id(id):
+        success = QuestaoDAO.excluir_id(id)
+        return success
+
+    @staticmethod
+    def admins_excluir_id(id):
+        success = AdminDAO.excluir_id(id)
+        return success
+
+    @staticmethod
+    def editar_questao_id(id, cat, alt, c_alt, text, pic, mime_type, adder):
+        q = Questao(id, cat, alt, c_alt, text, pic, mime_type, adder)
+        success = QuestaoDAO.edit_id(id, q)
+        return success
+
+    @staticmethod
+    def editar_admin_id(id, nome, email, senha):
+        q = Admin(id, nome, senha)
+        success = AdminDAO.edit_id(id, q, email)
+        return success

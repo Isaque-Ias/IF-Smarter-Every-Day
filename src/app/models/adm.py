@@ -36,16 +36,57 @@ class AdminDAO(DAO):
     table = "admins"
 
     @classmethod
-    def salvar(cls, obj):
+    def salvar(cls, obj, email):
         conn = cls.get_connection()
         cursor = conn.cursor()
 
         user_data = obj.to_sqlite()
 
+        id_val = None
         cursor.execute('INSERT OR IGNORE INTO admins (name, password) VALUES (?, ?)', user_data)
-
-        conn.commit()
+        if cursor.rowcount > 0:
+            id_val = cursor.lastrowid
+            cursor.execute(f'INSERT OR IGNORE INTO emails (email, admin_id) VALUES (?, ?)', (email, cursor.lastrowid))
+            if cursor.rowcount > 0:
+                conn.commit()
+                
         conn.close()
 
+        return id_val
+
+    @classmethod
+    def edit_id(cls, id, obj, email):
+        conn = cls.get_connection()
+        cursor = conn.cursor()
+
+        adm_data = obj.to_sqlite()
+
+        parameters = adm_data + [id]
+
+        success = None
+        cursor.execute(f'UPDATE OR IGNORE {cls.table} SET name = ?, password = ? WHERE (id == ?)', parameters)
         if cursor.rowcount > 0:
-            return cursor.lastrowid
+            cursor.execute(f'UPDATE OR IGNORE emails SET email = ? WHERE (admin_id == ?)', (email, id))
+            if cursor.rowcount > 0:
+                conn.commit()
+                success = True
+
+        conn.close()
+        return success
+
+    @classmethod
+    def excluir_id(cls, id):
+        conn = cls.get_connection()
+        cursor = conn.cursor()
+
+        success = None
+        cursor.execute(f"DELETE FROM {cls.table} WHERE id == ?", (id, ))
+        if cursor.rowcount > 0:
+            cursor.execute(f'DELETE FROM emails WHERE admin_id == ?', (id,))
+            if cursor.rowcount > 0:
+                conn.commit()
+                success = True
+        
+        conn.close()
+
+        return success

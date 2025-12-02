@@ -23,6 +23,11 @@ class CourseUI:
             st.session_state.screen = "perfil"
             st.rerun()
 
+        if st.session_state.course == "mat":
+            cls.course(0)
+        else:
+            cls.course(1)
+
     @classmethod
     def perfil(cls):
         st.text(cls.usuario.get_nome())
@@ -38,6 +43,20 @@ class CourseUI:
     def pt(cls):
         st.session_state.course = "pt"
         st.rerun()
+        
+    @classmethod
+    def course(cls, cat):
+        questoes = View.questoes_listar_categoria(cat)
+        html_questoes = ""
+        for idx, questao in enumerate(questoes):
+            message = f"{idx} - {questao.get_text()}"
+            html_questoes += f"<li style='margin-left: 0;'>{message}</li>\n"
+
+        st.markdown(f"""
+            <ul style='list_style_type: none;'>
+                {html_questoes}
+            </ul>
+""", unsafe_allow_html=True)
         
     @classmethod
     def editar(cls):

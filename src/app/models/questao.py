@@ -61,6 +61,18 @@ class QuestaoDAO(DAO):
     table = "questions"
 
     @classmethod
+    def listar_categoria(cls, categoria):
+        conn = cls.get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(f"SELECT * FROM {cls.table} WHERE (category == ?)", (categoria, ))
+        results = cursor.fetchall()
+        
+        conn.close()
+
+        return results
+
+    @classmethod
     def salvar(cls, obj):
         conn = cls.get_connection()
         cursor = conn.cursor()
@@ -74,3 +86,21 @@ class QuestaoDAO(DAO):
 
         if cursor.rowcount > 0:
             return cursor.lastrowid
+        
+    @classmethod
+    def edit_id(cls, id, obj):
+        conn = cls.get_connection()
+        cursor = conn.cursor()
+
+        question_data = obj.to_sqlite()
+
+        parameters = question_data + [id]
+
+        success = None
+        cursor.execute(f'UPDATE {cls.table} SET category = ?, text = ?, picture = ?, picture_mime_type = ?, alternatives = ?, correct_alternative = ?, added_by = ? WHERE (id == ?)', parameters)
+        if cursor.rowcount > 0:
+            success = True
+        conn.commit()
+        conn.close()
+        
+        return success
