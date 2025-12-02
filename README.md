@@ -1,4 +1,4 @@
-# IFriends
+# IF - Smarter Every Day
 
 ## Integrantes
 
