@@ -59,7 +59,7 @@ class View:
     
     @staticmethod
     def inserir_usuario(nome, email, senha, descricao, matematica, portugues, beta):
-        u = Usuario(0, nome, senha, matematica, portugues, beta, desc=descricao)
+        u = Usuario(0, nome, senha, matematica, portugues, desc=descricao, beta=beta)
         user_id = UsuarioDAO.salvar(u, email)
         return user_id
     
@@ -178,3 +178,19 @@ class View:
         q = Admin(id, nome, senha)
         success = AdminDAO.edit_id(id, q, email)
         return success
+
+    @staticmethod
+    def set_course_progress(id, question):
+        return UsuarioDAO.add_progress(id, question)
+
+    @staticmethod
+    def get_progress(id, question):
+        return UsuarioDAO.get_progress(id, question)
+    
+    @staticmethod
+    def set_course(id, course):
+        return UsuarioDAO.set_course(id, course)
+    
+    @staticmethod
+    def set_beta(id, value):
+        return UsuarioDAO.set_beta(id, value)

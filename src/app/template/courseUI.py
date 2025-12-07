@@ -36,15 +36,22 @@ class CourseUI:
     def course(cls, cat):
         questoes = View.questoes_listar_categoria(cat)
 
+        if "tutorial" in st.session_state:
+            if st.session_state.tutorial == True:
+                st.header("Escolha uma questão e faça-a!")
         st.divider()
         for idx, questao in enumerate(questoes):
-            _, col1, col2, col3, col4, _ = st.columns([1 + int(max(0, 5 * sin(idx / 3) ** 2)), 4, 2, 5, 4, 1 + int(max(0, 5 * cos(idx / 3) ** 2))])
-
+            _, col1, col2, col3, col4, _ = st.columns([1 + int(max(0, 5 * sin(idx / 3) ** 2)), 4, 5, 5, 4, 1 + int(max(0, 5 * cos(idx / 3) ** 2))])
+            
+            completed = View.get_progress(st.session_state.usuario_id, questao.get_id())
+            
             with col1:
                 st.write(f"Questão: {idx + 1}")
             with col2:
-                total = 0
-                st.write(f"{total}%")
+                if completed:
+                    st.write("Feito!")
+                else:
+                    st.write("Incompleto...")
             with col3:
                 if not questao.get_text() == "":
                     st.write(questao.get_title())
@@ -53,7 +60,10 @@ class CourseUI:
                     html_enunciado = f'<img src="data:image/png;base64,{base64_string}" width="120" style="border-radius:15px;">'
                     st.markdown(html_enunciado, unsafe_allow_html=True)
             with col4:
-                if st.button("Fazer", key=f'do_q_{idx}'):
+                button_text = "Fazer"
+                if completed:
+                    button_text = "Refazer"
+                if st.button(button_text, key=f'do_q_{idx}'):
                     st.session_state.screen = "questao"
                     st.session_state.question_value = questao.get_id()
                     st.rerun()
@@ -104,8 +114,10 @@ class CourseUI:
                 else:
                     st.session_state.screen = "result"
                     st.session_state.correct = False
-                View.set_course_progress()
-                st.rerun()
+                if View.set_course_progress(st.session_state.usuario_id, st.session_state.question_value):
+                    st.rerun()
+                else:
+                    st.warning("Erro no sistema...")
 
     def result():
         result_value = st.session_state.correct
@@ -118,4 +130,7 @@ class CourseUI:
 
         if st.button("Continuar"):
             st.session_state.screen = "course"
+            if "tutorial" in st.session_state:
+                if st.session_state.tutorial == True:
+                    st.session_state.tutorial = None
             st.rerun()

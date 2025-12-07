@@ -27,7 +27,12 @@ class PerfilUI:
                 st.session_state.usuario_id = None
                 st.session_state.screen = "login"
         else:
-            opcoes = ["Perfil"]
+            opcoes = ["Perfil", "Amizades"]
+            if cls.usuario.get_beta():
+                opcoes.append("Sair do Beta")
+            else:
+                opcoes.append("Virar Beta")
+
             if "tutorial" in st.session_state and st.session_state.tutorial == True:
                 st.header(f"Olá, {cls.usuario.get_nome()}! Escolha um dos seus cursos nas abas!")
             else:
@@ -54,6 +59,12 @@ class PerfilUI:
                         PerfilUI.excluir()
                     elif tab_name == "Novo Curso":
                         PerfilUI.new_course()
+                    elif tab_name == "Amizades":
+                        PerfilUI.friends()
+                    elif tab_name == "Virar Beta":
+                        PerfilUI.beta()
+                    elif tab_name == "Sair do Beta":
+                        PerfilUI.beta()
                     
     @classmethod
     def perfil(cls):
@@ -142,9 +153,34 @@ class PerfilUI:
         if st.button("Excluir perfil"):
             if View.users_excluir_id(st.session_state.usuario_id):
                 st.session_state.screen = "login"
+                st.rerun()
             else:
                 st.warning("Erro no sistema...")
 
     @classmethod
     def new_course(cls):
+        if not cls.usuario.get_mat():
+            if st.button("Entrar em matemática"):
+                View.set_course(cls.usuario.get_id(), 0)
+                st.rerun()
+
+        if not cls.usuario.get_pt():
+            if st.button("Entrar em português"):
+                View.set_course(cls.usuario.get_id(), 1)
+                st.rerun()
+
+    @classmethod
+    def friends(cls):
         pass
+
+    @classmethod
+    def beta(cls):
+        beta_val = cls.usuario.get_beta()
+        if beta_val:
+            if st.button("Deixar de ser Beta"):
+                View.set_beta(cls.usuario.get_id(), 0)
+                st.rerun()
+        else:
+            if st.button("Virar Beta"):
+                View.set_beta(cls.usuario.get_id(), 1)
+                st.rerun()

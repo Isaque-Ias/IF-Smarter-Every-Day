@@ -90,7 +90,11 @@ class UsuarioDAO(DAO):
             SELECT * FROM users WHERE name == ?;
         """, (nome,))
         
-        return cursor.fetchone()
+        data = cursor.fetchone()
+
+        conn.close()
+
+        return data
 
     @classmethod
     def salvar(cls, obj, email):
@@ -140,13 +144,78 @@ class UsuarioDAO(DAO):
         cursor = conn.cursor()
 
         success = None
-        cursor.execute(f"DELETE FROM {cls.table} WHERE id == ?", (id, ))
+        cursor.execute(f"DELETE FROM {cls.table} WHERE id = ?", (id, ))
         if cursor.rowcount > 0:
-            cursor.execute(f'DELETE FROM emails WHERE user_id == ?', (id,))
+            cursor.execute(f'DELETE FROM emails WHERE user_id = ?', (id,))
             if cursor.rowcount > 0:
-                conn.commit()
-                success = True
+                cursor.execute(f'DELETE FROM course_progress WHERE user_id = ?', (id, ))
+                if cursor.rowcount > 0:
+                    conn.commit()
+                    success = True
         
+        conn.close()
+
+        return success
+
+    @classmethod
+    def add_progress(cls, id, question):
+        conn = cls.get_connection()
+        cursor = conn.cursor()
+
+        success = None
+        cursor.execute(f'INSERT OR IGNORE INTO course_progress (question_id, user_id) VALUES (?, ?)', (question, id))
+        if cursor.rowcount > 0:
+            conn.commit()
+            success = True
+        
+        conn.close()
+
+        return success
+
+    @classmethod
+    def get_progress(cls, id, question):
+        conn = cls.get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(f'SELECT * FROM course_progress WHERE question_id = ? AND user_id = ?', (question, id))
+
+        data = cursor.fetchone()
+
+        conn.close()
+
+        return data
+    
+    @classmethod
+    def set_course(cls, id, course):
+        conn = cls.get_connection()
+        cursor = conn.cursor()
+
+        if course == 0:
+            course_val = "enrolled_math"
+        else:
+            course_val = "enrolled_pt"
+
+        success = None
+        cursor.execute(f'UPDATE OR IGNORE {cls.table} SET {course_val} = ? WHERE (id == ?)', (1, id))
+        if cursor.rowcount > 0:
+            conn.commit()
+            success = True
+
+        conn.close()
+
+        return success
+    
+    @classmethod
+    def set_beta(cls, id, value):
+        conn = cls.get_connection()
+        cursor = conn.cursor()
+
+        success = None
+        cursor.execute(f'UPDATE OR IGNORE {cls.table} SET is_beta = ? WHERE (id == ?)', (value, id))
+        if cursor.rowcount > 0:
+            conn.commit()
+            success = True
+
         conn.close()
 
         return success
