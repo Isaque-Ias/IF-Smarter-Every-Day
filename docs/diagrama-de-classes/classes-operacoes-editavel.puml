@@ -1,0 +1,30 @@
+@startuml
+
+class View {
+Conta autenticar(String email, String senha)
+Aluno|Admin email_listar(String email)
+Aluno inserir_usuario(String nome, String email, String senha, String descricao, Bool matematica, Bool portugues)
+Admin inserir_admin(String nome, String email, String senha)
+Aluno usuario_listar_id(Integer id)
+Aluno usuario_listar_email(String email)
+Aluno usuario_listar_nome(String nome)
+Admin admin_listar_id(Integer id)
+Admin admin_listar_email(String email)
+Array admin_listar()
+Array questoes_listar()
+Array questoes_listar_categoria(String categoria)
+Questao questao_listar_id(Integer id)
+Bool questao_excluir_id(Integer id)
+Bool aluno_excluir_id(Integer id)
+Bool admin_excluir_id(Integer id)
+Bool questao_editar_id(Integer id)
+Bool aluno_editar_id(Integer id)
+Bool admin_editar_id(Integer id)
+Bool adicionar_resposta(Integer usuario_id, Integer questao_id)
+Bool listar_resposta(Integer usuario_id, Integer questao_id)
+Bool fazer_curso(Integer usuario_id, Bool curso)
+}
+note top of View : "Conta é uma tupla desempacotada de um objeto da classe Aluno ou da classe Administrador e uma string para determinar qual classe o objeto pertence"
+note bottom of View : "Na última operação, curso é passado como um booleano com 0 = matemática e 1 = português."
+
+@enduml

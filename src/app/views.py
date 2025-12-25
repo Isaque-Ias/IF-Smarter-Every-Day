@@ -183,21 +183,3 @@ class View:
     @staticmethod
     def set_course(id, course):
         return UsuarioDAO.set_course(id, course)
-    
-    @staticmethod
-    def set_beta(id, value):
-        return UsuarioDAO.set_beta(id, value)
-    
-    @staticmethod
-    def amizade_id(adding, added):
-        return UsuarioDAO.amizade_id(adding, added)
-    
-    @classmethod
-    def amizades_listar(cls, usuario):
-        data = [cls.usuario_listar_id(id[0]) for id in UsuarioDAO.amizade_listar(usuario)]
-        return data
-    
-    @classmethod
-    def pedidos_listar(cls, usuario):
-        data = [cls.usuario_listar_id(id[1]) for id in UsuarioDAO.pedidos_listar(usuario)]
-        return data
